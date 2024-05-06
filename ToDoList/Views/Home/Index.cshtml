@@ -1,0 +1,128 @@
+﻿@{
+    ViewData["Title"] = "ToDoList";
+}
+
+<div>
+    <div style="float: right; margin-bottom: 100px">
+        <div class="card m-3 text-white" style="border: 2px solid black; background-color: #28242C">
+            <form asp-controller="Home" asp-action="CreateCategory" method="post">
+                <table class="table table-dark rounded" style="vertical-align: middle;">
+                    <tr><td style="text-align: center; font-size: 18px; font-weight: 600" colspan="2">Available categories</td></tr>
+                    @foreach (var category in ViewBag.categories)
+                    {
+                        <tr>
+                            <td>
+                                <p>@category.name</p>
+                            </td>
+                            <td>
+                                <a class="btn btn-danger" style="float: right" onclick="location.href='@Url.Action("DeleteCategory", "Home", new {id = category.id})'">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>Name:</td>
+                        <td><input required placeholder="Category Name" class="rounded" autocomplete="off" name="name" type="text" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><input type="submit" value="Add Category" class="btn btn-primary text-white" /></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-center" style="margin-left: 100px">
+        <div>
+            <div class="card p-1 m-3 text-white" style="width: 500px; border: 2px solid black; border-radius: 20px; background-color: #28282B">
+                <div class="card-body">
+                    <form asp-controller="Home" asp-action="SaveRecord" method="post">
+                        <table style="width: 100%">
+                            <tr>
+                                <td>Name:</td>
+                                <td><input required placeholder="Note Title" style="width: 98%" class="rounded mb-1" autocomplete="off" name="name" type="text" /></td>
+                            </tr>
+                            <tr>
+                                <td>Description:</td>
+                                <td><textarea placeholder="Optional Description" style="width: 98%" class="rounded" autocomplete="off" name="description"></textarea></td>
+                            </tr>
+                            <tr>
+                                <td>Category:</td>
+                                <td>
+                                    <select name="categories" multiple style="width: 98%">
+                                        @foreach (var category in ViewBag.categories)
+                                        {
+                                            <option value="@category.id">@category.name</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="submit" value="Add Task" class="btn btn-primary text-white" /></td>
+                                <td><input name="deadline" style="width: 98%" type="datetime-local"/></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            @foreach (var note in ViewBag.notes)
+            {
+                @if (note.statuscode == 0)
+                {
+                    <div class="card p-1 m-3" style="width: 500px; border: 2px solid black; border-radius: 20px; background-color: #28282B">
+                        <div class="card-body" 
+                        style="border-radius: 18px; background: repeating-linear-gradient(-45deg, #FCECBD 0px, #FCECBD 4px, wheat 2px, wheat 9px);">
+                            <input type="checkbox" style="transform: scale(2); vertical-align: text-top; margin-right: 10px" onclick="location.href='@Url.Action("UpdateStatus", "Home", new {id = note.id})'">
+                            <p class="btn btn-warning mb-3 rounded-pill" style="border: 2px orange solid">In Progress</p>
+                            <a style="float: right; border: 2px darkred dashed" class="btn btn-danger mb-3 rounded-pill" onclick="location.href='@Url.Action("DeleteRecord", "Home", new {id = note.id})'">🗑</a>
+                            <h4 class="task-name">@note.name</h4>
+                            <p class="task-description">@note.description</p>
+
+                            <p class="task-created m-0" style="font-size: 13px">
+                                <span style="float: right"><b>Created:</b> @note.created</span><br>
+                                <span style="float: right"><b>Updated:</b> @note.modified</span>
+                                @if (note.deadline != null)
+                                {
+                                    <span style="float: left"><b>Deadline:</b> @note.deadline</span>
+                                }
+                            </p>
+                        </div>
+                        <div style="display: block; margin: auto;">
+                        @foreach (var categoryNote in @note.categoriesNotes)
+                        {
+                                <p class="btn btn-dark my-1 rounded-pill border-light" style="border-width: 2px">@categoryNote.category.name</p>
+                        }
+                        </div>
+                    </div>
+                }
+            }
+            @foreach (var note in ViewBag.notes)
+            {
+                @if (note.statuscode == 1)
+                {
+                    <div class="card p-1 m-3" style="width: 500px; border: 2px solid black; border-radius: 20px; background-color: #28282B">
+                        <div class="card-body" style="border-radius: 18px; background: repeating-linear-gradient(45deg, #c1f7c9 0px, #c1f7c9 4px, #b1f2b1 2px, #b1f2b1 9px);">
+                            <input type="checkbox" style="transform: scale(2); vertical-align: text-top; margin-right: 10px" checked="checked" onclick="location.href='@Url.Action("UpdateStatus", "Home", new {id = note.id})'">
+                            <p class="btn btn-success mb-3 rounded-pill" style="border: 2px darkgreen solid">Finished</p>
+                            <a style="float: right; border: 2px darkred dashed" class="btn btn-danger mb-3 rounded-pill" onclick="location.href='@Url.Action("DeleteRecord", "Home", new {id = note.id})'">🗑</a>
+                            <h4 class="task-name">@note.name</h4>
+                            <p class="task-description">@note.description</p>
+                            <p class="task-created m-0" style="font-size: 13px">
+                                <span style="float: right"><b>Created:</b> @note.created</span><br>
+                                <span style="float: right"><b>Updated:</b> @note.modified</span>
+                                @if (note.deadline != null)
+                                {
+                                    <span style="float: left"><b>Deadline:</b> @note.deadline</span>
+                                }
+                            </p>
+                        </div>
+                        <div style="display: block; margin: auto;">
+                        @foreach (var categoryNote in @note.categoriesNotes)
+                        {
+                                <p class="btn btn-dark my-1 rounded-pill border-light" style="border-width: 2px">@categoryNote.category.name</p>
+                        }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
