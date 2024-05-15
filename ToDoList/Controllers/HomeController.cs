@@ -17,13 +17,16 @@ namespace ToDoList.Controllers
             _noteService = noteService;
             _categoryService = categoryService;
         }
-
         public async Task<IActionResult> Index()
         {
             var notes = await _noteService.GetAll();
-            ViewBag.notes = notes.Reverse();
-            ViewBag.categories = await _categoryService.GetAll();
-            return View();
+            var categories = await _categoryService.GetAll();
+            var model = new DataViewModel()
+            {
+                Notes = notes.Reverse().OrderBy(note => note.statuscode),
+                Categories = categories,
+            };
+            return View(model);
         }
 
         public IActionResult Privacy()
@@ -31,28 +34,20 @@ namespace ToDoList.Controllers
             return View();
         }
 
-        public IActionResult SaveRecord() 
+        public IActionResult SaveRecord(Note note, int[] categories) 
         {
-            Note note = new Note();
-            note.name = HttpContext.Request.Form["name"].ToString();
             if (note.name != string.Empty)
             {
-                note.description = HttpContext.Request.Form["description"].ToString();
+                note.statuscode = 0;
                 note.created = DateTime.Now;
                 note.modified = DateTime.Now;
-                string deadline = HttpContext.Request.Form["deadline"].ToString();
-                if (!deadline.IsNullOrEmpty())
-                    note.deadline = DateTime.Parse(deadline);
-                note.statuscode = 0;
-                string categories = HttpContext.Request.Form["categories"].ToString();
                 if (!categories.IsNullOrEmpty())
                 {
-                    string[] idArr = categories.Split(",");
-                    foreach (string id in idArr)
+                    foreach (int categoryId in categories)
                     {
                         CategoryNote categoryNote = new CategoryNote();
                         categoryNote.noteid = note.id;
-                        categoryNote.categoryid = int.Parse(id);
+                        categoryNote.categoryid = categoryId;
                         note.categoriesNotes.Add(categoryNote);
                     }
                 }
@@ -65,10 +60,10 @@ namespace ToDoList.Controllers
             _noteService.Delete(id);
             return RedirectToAction("Index");
         }
-        public IActionResult CreateCategory()
+        public IActionResult CreateCategory(Category _category)
         {
             Category category = new Category();
-            category.name = HttpContext.Request.Form["name"].ToString();
+            category.name = _category.name;
             if(category.name != string.Empty)
                 _categoryService.Add(category);
             return RedirectToAction("Index");
