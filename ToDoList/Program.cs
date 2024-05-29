@@ -3,19 +3,20 @@ using ToDoList.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<ApplicationDbContext>();
-builder.Services.AddScoped<INoteService, NoteService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddSingleton<ApplicationSQLContext>();
+builder.Services.AddScoped<INoteService, NoteServiceSQL>();
+builder.Services.AddScoped<ICategoryService, CategoryServiceSQL>();
+
+builder.Services.AddSingleton<ApplicationXMLContext>();
+builder.Services.AddScoped<INoteService, NoteServiceXML>();
+builder.Services.AddScoped<ICategoryService, CategoryServiceXML>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

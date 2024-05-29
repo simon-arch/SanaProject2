@@ -4,10 +4,10 @@ using ToDoList.Models;
 
 namespace ToDoList.Services
 {
-    public class CategoryService : ICategoryService
+    public class CategoryServiceSQL : ICategoryService
     {
-        private readonly ApplicationDbContext _context;
-        public CategoryService(ApplicationDbContext context)
+        private readonly ApplicationSQLContext _context;
+        public CategoryServiceSQL(ApplicationSQLContext context)
         {
             _context = context;
         }

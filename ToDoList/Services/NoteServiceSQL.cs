@@ -5,17 +5,17 @@ using ToDoList.Models;
 
 namespace ToDoList.Services
 {
-    public class NoteService : INoteService
+    public class NoteServiceSQL : INoteService
     {
-        private readonly ApplicationDbContext _context;
-        public NoteService(ApplicationDbContext context)
+        private readonly ApplicationSQLContext _context;
+        public NoteServiceSQL(ApplicationSQLContext context)
         {
             _context = context;
         }
         public void Add(Note note)
         {
             int noteId = (int)_context.Connection.Insert(note);
-            foreach(CategoryNote categoryNote in note.categoriesNotes)
+            foreach (CategoryNote categoryNote in note.categoriesNotes)
                 categoryNote.noteid = noteId;
             _context.Connection.Insert(note.categoriesNotes);
         }
@@ -41,7 +41,8 @@ namespace ToDoList.Services
             {
                 if (c != null)
                 {
-                    n.categoriesNotes.Add(new CategoryNote {
+                    n.categoriesNotes.Add(new CategoryNote
+                    {
                         category = c,
                         categoryid = c.id,
                         note = n,
@@ -77,10 +78,11 @@ namespace ToDoList.Services
             {
                 if (c != null)
                 {
-                    n.categoriesNotes.Add(new CategoryNote { 
-                        category = c, 
-                        categoryid = c.id, 
-                        note = n, 
+                    n.categoriesNotes.Add(new CategoryNote
+                    {
+                        category = c,
+                        categoryid = c.id,
+                        note = n,
                         noteid = n.id
                     });
                 }

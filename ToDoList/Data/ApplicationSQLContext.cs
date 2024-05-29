@@ -1,15 +1,15 @@
 ﻿using Microsoft.Data.SqlClient;
 namespace ToDoList.Data
 {
-    public class ApplicationDbContext
+    public class ApplicationSQLContext
     {
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;
         public SqlConnection Connection { get; }
-        public ApplicationDbContext(IConfiguration configuration)
+        public ApplicationSQLContext(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("DefaultConnection")!;
+            _connectionString = _configuration.GetConnectionString("SQLConnection")!;
             Connection = new SqlConnection(_connectionString);
         }
     }

@@ -5,25 +5,40 @@
 <div>
     <div style="float: right; margin-bottom: 100px">
         <div class="card m-3 text-white" style="border: 2px solid black; background-color: #28242C">
-            <form asp-controller="Home" asp-action="CreateCategory" method="post">
-                <table class="table table-dark rounded" style="vertical-align: middle;">
-                    <tr><td style="text-align: center; font-size: 18px; font-weight: 600" colspan="2">Available categories</td></tr>
-                    @foreach (var category in Model.Categories)
-                    {
+            <table class="table table-dark rounded" style="vertical-align: middle;">
+                <form asp-controller="Home" asp-action="ChangeService" method="post">
+                <tr><td style="text-align: center; font-size: 18px; font-weight: 600" colspan="2">Database</td></tr>
+                <tr>
+                    <td>Type:</td>
+                    <td>
+                        <select style="width: 98%" name="dbSelect" id="dbSelect" type="text">
+                            <option value="0">SQL</option>
+                            <option value="1">XML</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="submit" value="Change Database" class="btn btn-primary text-white" /></td>
+                </tr>
+                </form>
+                <form asp-controller="Home" asp-action="CreateCategory" method="post">
+                        <tr><td style="text-align: center; font-size: 18px; font-weight: 600" colspan="2">Available categories</td></tr>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <tr>
+                                <td><p>@category.name</p></td>
+                                <td><a class="btn btn-danger" style="float: right" asp-action="DeleteCategory" asp-route-id="@category.id">Delete</a></td>
+                            </tr>
+                        }
                         <tr>
-                            <td><p>@category.name</p></td>
-                            <td><a class="btn btn-danger" style="float: right" asp-action="DeleteCategory" asp-route-id="@category.id">Delete</a></td>
+                            <td>Name:</td>
+                            <td><input required placeholder="Category Name" class="rounded" autocomplete="off" name="name" type="text" asp-for="Category.name"/></td>
                         </tr>
-                    }
-                    <tr>
-                        <td>Name:</td>
-                        <td><input required placeholder="Category Name" class="rounded" autocomplete="off" name="name" type="text" asp-for="Category.name"/></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><input type="submit" value="Add Category" class="btn btn-primary text-white" /></td>
-                    </tr>
-                </table>
-            </form>
+                        <tr>
+                            <td colspan="2"><input type="submit" value="Add Category" class="btn btn-primary text-white" /></td>
+                        </tr>
+                </form>
+            </table>
         </div>
     </div>
     <div class="d-flex align-items-center justify-content-center" style="margin-left: 100px">

@@ -1,5 +1,4 @@
 ﻿using ToDoList.Models;
-
 namespace ToDoList.Services
 {
     public interface ICategoryService
