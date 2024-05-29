@@ -4,7 +4,7 @@ namespace ToDoList.Services
 {
     public interface INoteService
     {
-        Task<IEnumerable<Note>> GetAll();
+        IEnumerable<Note> GetAll();
         void Add(Note note);
         void Delete(int id);
         Note? Get(int id);

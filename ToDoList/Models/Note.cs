@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Dapper.Contrib.Extensions;
 
 namespace ToDoList.Models
 {
@@ -14,6 +13,7 @@ namespace ToDoList.Models
         public DateTime modified { get; set; }
         public DateTime? deadline { get; set; }
         public int statuscode { get; set; }
+        [Computed]
         public List<CategoryNote> categoriesNotes { get; set; } = new List<CategoryNote>();
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Dapper.Contrib.Extensions;
 
 namespace ToDoList.Models
 {
@@ -6,8 +6,10 @@ namespace ToDoList.Models
     public class CategoryNote
     {
         public int noteid { get; set; }
-        public Note note { get; set; }
         public int categoryid { get; set; }
+        [Computed]
+        public Note note { get; set; }
+        [Computed]
         public Category category { get; set; }
     }
 }

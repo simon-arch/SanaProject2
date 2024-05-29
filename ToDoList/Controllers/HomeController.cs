@@ -8,19 +8,17 @@ namespace ToDoList.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly INoteService _noteService;
         private readonly ICategoryService _categoryService;
-        public HomeController(ILogger<HomeController> logger, INoteService noteService, ICategoryService categoryService)
+        public HomeController(INoteService noteService, ICategoryService categoryService)
         {
-            _logger = logger;
             _noteService = noteService;
             _categoryService = categoryService;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var notes = await _noteService.GetAll();
-            var categories = await _categoryService.GetAll();
+            var notes = _noteService.GetAll();
+            var categories = _categoryService.GetAll();
             var model = new DataViewModel()
             {
                 Notes = notes.Reverse().OrderBy(note => note.statuscode),
@@ -28,12 +26,10 @@ namespace ToDoList.Controllers
             };
             return View(model);
         }
-
         public IActionResult Privacy()
         {
             return View();
         }
-
         public IActionResult SaveRecord(Note note, int[] categories) 
         {
             if (note.name != string.Empty)

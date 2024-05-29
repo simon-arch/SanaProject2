@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper.Contrib.Extensions;
 using ToDoList.Data;
 using ToDoList.Models;
 
@@ -13,8 +13,7 @@ namespace ToDoList.Services
         }
         public void Add(Category category)
         {
-            _context.categories.Add(category);
-            _context.SaveChanges();
+            _context.Connection.Insert(category);
         }
 
         public void Delete(int id)
@@ -22,29 +21,18 @@ namespace ToDoList.Services
             Category? category = Get(id);
             if (category != null)
             {
-                _context.Remove(category);
-                _context.SaveChanges();
+                _context.Connection.Delete(category);
             }
         }
 
         public Category? Get(int id)
         {
-            return _context.categories.FirstOrDefault(c => c.id == id);
+            return _context.Connection.Get<Category>(id);
         }
 
-        public async Task<IEnumerable<Category>> GetAll()
+        public IEnumerable<Category> GetAll()
         {
-            return await _context.categories.ToListAsync();
-        }
-
-        public void Update(Category newCategory, int id)
-        {
-            Category? category = Get(id);
-            if (category != null)
-            {
-                category = newCategory;
-                _context.SaveChanges();
-            }
+            return _context.Connection.GetAll<Category>();
         }
     }
 }
