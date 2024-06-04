@@ -13,34 +13,19 @@ namespace ToDoList.Services
         }
         public void Add(Note note)
         {
-            var max = _context.Connection.Root?
-                .Elements("note")
-                .Select(elem => (int)elem.Element("id")!)
-                .DefaultIfEmpty(-1)
-                .Max();
-
-            var noteElement = new XElement("note",
-                new XElement("id", max + 1),
-                new XElement("name", note.name),
-                new XElement("created", note.created),
-                new XElement("modified", note.modified),
-                new XElement("deadline", note.deadline),
-                new XElement("statuscode", note.statuscode),
-                new XElement("description", note.description),
-                new XElement("categories",
-                    note.categoriesNotes.Select(cn => new XElement("categoryid", cn.categoryid))
-                )
-            );
-
-            _context.Connection.Root?.Add(noteElement);
-            _context.SaveChanges();
+            var idElem = _context.Connection.Root!
+                .Element("NextID")!
+                .Element("note")!;
+            note.id = int.Parse(idElem.Value);
+            idElem.Value = (note.id + 1).ToString();
+            AddElem(note);
         }
         public void Delete(int id)
         {
             var element = _context.Connection.Root?
-                .Elements("note")
+                .Element("Notes")!
+                .Elements(nameof(Note))
                 .FirstOrDefault(e => (int)e.Element("id")! == id);
-
             if (element != null)
             {
                 element.Remove();
@@ -49,90 +34,72 @@ namespace ToDoList.Services
         }
         public Note? Get(int id)
         {
-            var element = _context.Connection.Root!.Elements("note")
-                .FirstOrDefault(n => (int)n.Element("id")! == id);
-
-            Dictionary<int, Category> categories = _context.Connection.Root.Elements("category")
-                .ToDictionary(
-                    c => (int)c.Element("id")!,
-                    c => new Category
-                    {
-                        id = (int)c.Element("id")!,
-                        name = (string)c.Element("name")!
-                    }
-                );
-
-            Note note = new Note
+            var element = _context.Connection.Root?
+                .Element("Notes")!
+                .Elements(nameof(Note))
+                .FirstOrDefault(e => (int)e.Element("id")! == id);
+            return GetElem(element!);
+        }
+        private Note? GetElem(XElement elem)
+        {
+            if (elem == null) return null;
+            Note? note = null;
+            var categoryIds = elem.Element("Categories")!
+                .Elements()
+                .Select(id => int.Parse(id.Value));
+            note = _context.Deserialize<Note>(elem);
+            foreach (var categoryId in categoryIds)
             {
-                id = (int)element!.Element("id")!,
-                name = (string)element.Element("name")!,
-                created = (DateTime)element.Element("created")!,
-                modified = (DateTime)element.Element("modified")!,
-                deadline = element.Element("deadline")?.Value != string.Empty ? (DateTime?)element.Element("deadline") : null,
-                statuscode = (int)element.Element("statuscode")!,
-                description = (string)element.Element("description")!,
-                categoriesNotes = new List<CategoryNote>()
-            };
-
-            var elem = element.Element("categories");
-            if (elem != null)
-            {
-                List<int> categoryids = elem.Elements("categoryid")
-                    .Select(c => (int)c)
-                    .ToList();
-
-                List<int> valid = categoryids.Where(categories.ContainsKey).ToList();
-
-                elem.Elements("categoryid")
-                    .Where(c => !valid.Contains((int)c))
-                    .Remove();
-
-                foreach (var index in valid)
+                var categoryelem = _context.Connection.Root?
+                    .Element("Categories")!
+                    .Elements()
+                    .FirstOrDefault(e => int.Parse(e.Element("id")!.Value) == categoryId);
+                if (categoryelem != null) 
                 {
-                    Category category = categories[index];
-                    note.categoriesNotes.Add(new CategoryNote
+                    var category = _context.Deserialize<Category>(categoryelem);
+                    note.categoriesNotes.Add(new CategoryNote()
                     {
-                        categoryid = category.id,
-                        category = category,
                         noteid = note.id,
+                        categoryid = categoryId,
+                        category = category
                     });
                 }
             }
-
             return note;
         }
         public IEnumerable<Note> GetAll()
         {
             List<Note> notes = new List<Note>();
-            foreach (var note in _context.Connection.Root?.Elements("note")!)
-                notes.Add(Get((int)note.Element("id")!)!);
+            foreach (XElement elem in _context.Connection.Root?
+                .Element("Notes")!
+                .Elements()!)
+            {
+                Note note = GetElem(elem)!;
+                if (note != null)
+                {
+                    notes.Add(note);
+                }
+            }
             return notes;
+        }
+        private void AddElem(Note note)
+        {
+            var target = _context.Serialize(note);
+            target.Add(new XElement("Categories"));
+            var categories = target.Element("Categories");
+            foreach (var item in note.categoriesNotes)
+            {
+                categories.Add(new XElement("id", item.categoryid));
+            }
+            _context.Connection.Root?
+                .Element("Notes")!
+                .Add(target);
+            _context.SaveChanges();
         }
         public void Update(Note newNote, int id)
         {
-            Note? note = Get(id);
-            if (note != null)
-            {
-                _context.Connection.Root?
-                    .Elements("note")
-                    .FirstOrDefault(n => (int)n.Element("id")! == id)?
-                    .ReplaceWith(new XElement("note",
-                        new XElement("id", newNote.id),
-                        new XElement("name", newNote.name),
-                        new XElement("created", newNote.created),
-                        new XElement("modified", newNote.modified),
-                        new XElement("deadline", newNote.deadline),
-                        new XElement("statuscode", newNote.statuscode),
-                        new XElement("description", newNote.description),
-                        new XElement("categories",
-                            note.categoriesNotes.Select(cn =>
-                                new XElement("category", new XElement("id", cn.categoryid))
-                            )
-                        )
-                    ));
-
-                _context.SaveChanges();
-            }
+            Delete(id);
+            AddElem(newNote);
         }
     }
 }

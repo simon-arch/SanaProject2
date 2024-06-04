@@ -45,7 +45,6 @@ namespace ToDoList.Services
                     {
                         category = c,
                         categoryid = c.id,
-                        note = n,
                         noteid = n.id
                     });
                 }
@@ -82,7 +81,6 @@ namespace ToDoList.Services
                     {
                         category = c,
                         categoryid = c.id,
-                        note = n,
                         noteid = n.id
                     });
                 }

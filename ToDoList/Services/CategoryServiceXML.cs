@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using ToDoList.Data;
 using ToDoList.Models;
 
@@ -14,31 +13,22 @@ namespace ToDoList.Services
         }
         public void Add(Category category)
         {
-            var max = _context.Connection.Root?
-                .Elements("category")
-                .Select(elem => (int)elem.Element("id")!)
-                .DefaultIfEmpty(-1)
-                .Max();
-
-            XElement element = new XElement("category",
-                new XElement("id", max + 1)
-            );
-
-            foreach (PropertyInfo property in typeof(Category).GetProperties())
-            {
-                if (property.Name != nameof(Category.id))
-                {
-                    element.Add(new XElement(property.Name.ToLower(), property.GetValue(category)));
-                }
-            }
-
-            _context.Connection.Root?.AddFirst(element);
+            var idElem = _context.Connection.Root!
+                .Element("NextID")!
+                .Element("category")!;
+            category.id = int.Parse(idElem.Value);
+            idElem.Value = (category.id + 1).ToString();
+            var target = _context.Serialize(category);
+            _context.Connection.Root?
+                .Element("Categories")!
+                .AddFirst(target);
             _context.SaveChanges();
         }
         public void Delete(int id)
         {
             var element = _context.Connection.Root?
-                .Elements("category")
+                .Element("Categories")!
+                .Elements(nameof(Category))
                 .FirstOrDefault(elem => (int)elem.Element("id")! == id);
             if (element != null)
             {
@@ -49,27 +39,33 @@ namespace ToDoList.Services
         public Category? Get(int id)
         {
             var element = _context.Connection.Root?
-                .Elements("category")
+                .Element("Categories")!
+                .Elements(nameof(Category))
                 .FirstOrDefault(e => (int)e.Element("id")! == id);
-
-            if (element != null)
+            return GetElem(element!);
+        }
+        private Category? GetElem(XElement elem)
+        {
+            Category? category = null;
+            if (elem != null)
             {
-                Category category = new Category();
-                foreach (PropertyInfo property in typeof(Category).GetProperties())
-                {
-                    property.SetValue(category, 
-                        Convert.ChangeType(element.Element(property.Name)!.Value, 
-                        property.PropertyType));
-                }
-                return category;
+                category = _context.Deserialize<Category>(elem);
             }
-            return null;
+            return category;
         }
         public IEnumerable<Category> GetAll()
         {
             List<Category> categories = new List<Category>();
-            foreach (var note in _context.Connection.Root?.Elements("category")!)
-                categories.Add(Get((int)note.Element("id")!)!);
+            foreach (var elem in _context.Connection.Root?
+                .Element("Categories")!
+                .Elements()!)
+            {
+                Category category = GetElem(elem)!;
+                if (category != null)
+                {
+                    categories.Add(category);
+                }
+            }
             return categories;
         }
     }

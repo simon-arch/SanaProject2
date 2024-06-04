@@ -7,5 +7,6 @@
         public Note Note { get; set; }
         public Category Category { get; set; }
         public int[] CategoryIds { get; set; }
+        public int CurrentDatabase { get; set; }
     }
 }

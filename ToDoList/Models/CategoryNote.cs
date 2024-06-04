@@ -8,8 +8,6 @@ namespace ToDoList.Models
         public int noteid { get; set; }
         public int categoryid { get; set; }
         [Computed]
-        public Note note { get; set; }
-        [Computed]
         public Category category { get; set; }
     }
 }

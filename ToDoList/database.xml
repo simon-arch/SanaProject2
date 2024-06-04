@@ -1,47 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <database>
-  <category>
-    <id>4</id>
-    <name>123</name>
-  </category>
-  <category>
-    <id>3</id>
-    <name>asdasd</name>
-  </category>
-  <category>
-    <id>2</id>
-    <name>3</name>
-  </category>
-  <category>
-    <id>1</id>
-    <name>2</name>
-  </category>
-  <category>
-    <id>0</id>
-    <name>1</name>
-  </category>
-  <note>
-    <id>0</id>
-    <name>1</name>
-    <created>2024-05-30T00:09:58.2173168+03:00</created>
-    <modified>2024-05-30T00:09:58.2173487+03:00</modified>
-    <deadline />
-    <statuscode>0</statuscode>
-    <description>1</description>
-    <categories>
-      <categoryid>4</categoryid>
-      <categoryid>3</categoryid>
-      <categoryid>2</categoryid>
-    </categories>
-  </note>
-  <note>
-    <id>1</id>
-    <name>11</name>
-    <created>2024-05-30T00:31:46.6607414+03:00</created>
-    <modified>2024-05-30T00:31:47.9233896+03:00</modified>
-    <deadline />
-    <statuscode>1</statuscode>
-    <description>1123123</description>
-    <categories />
-  </note>
+  <NextID>
+    <note>0</note>
+    <category>0</category>
+  </NextID>
+  <Categories>
+  </Categories>
+  <Notes>
+  </Notes>
 </database>

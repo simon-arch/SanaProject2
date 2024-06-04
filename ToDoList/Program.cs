@@ -12,6 +12,11 @@ builder.Services.AddSingleton<ApplicationXMLContext>();
 builder.Services.AddScoped<INoteService, NoteServiceXML>();
 builder.Services.AddScoped<ICategoryService, CategoryServiceXML>();
 
+builder.Services.AddScoped<ServiceFactory>();
+
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -24,8 +29,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

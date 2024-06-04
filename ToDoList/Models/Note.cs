@@ -1,4 +1,5 @@
 ﻿using Dapper.Contrib.Extensions;
+using System.Xml.Serialization;
 
 namespace ToDoList.Models
 {
@@ -14,6 +15,7 @@ namespace ToDoList.Models
         public DateTime? deadline { get; set; }
         public int statuscode { get; set; }
         [Computed]
+        [XmlIgnore]
         public List<CategoryNote> categoriesNotes { get; set; } = new List<CategoryNote>();
     }
 }
