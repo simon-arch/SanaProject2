@@ -21,7 +21,7 @@ namespace ToDoList.Services
             var target = _context.Serialize(category);
             _context.Connection.Root?
                 .Element("Categories")!
-                .AddFirst(target);
+                .Add(target);
             _context.SaveChanges();
         }
         public void Delete(int id)

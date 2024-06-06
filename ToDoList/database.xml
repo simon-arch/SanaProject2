@@ -1,11 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <database>
   <NextID>
-    <note>0</note>
-    <category>0</category>
+    <note>32</note>
+    <category>40</category>
   </NextID>
   <Categories>
+    <Category>
+      <id>38</id>
+      <name>XML_Category</name>
+    </Category>
   </Categories>
-  <Notes>
-  </Notes>
+  <Notes />
 </database>
