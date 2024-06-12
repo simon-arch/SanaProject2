@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Dapper.Contrib.Extensions;
 using ToDoList.Data;
 using ToDoList.Models;
 
@@ -14,17 +13,25 @@ namespace ToDoList.Services
         }
         public void Add(Note note)
         {
-            int noteId = (int)_context.Connection.Insert(note);
+            string sql = @$"INSERT INTO Note (name, description, created, modified, deadline, statuscode) 
+                            OUTPUT inserted.Id                            
+                            VALUES (@name, @description, @created, @modified, @deadline, @statuscode)";
+            int noteId = _context.Connection.QuerySingle<int>(sql, note);
             foreach (CategoryNote categoryNote in note.categoriesNotes)
                 categoryNote.noteid = noteId;
-            _context.Connection.Insert(note.categoriesNotes);
+            sql = $@"INSERT INTO categoryNote (noteid, categoryid)
+                     VALUES (@noteid, @categoryid)";
+            _context.Connection.Execute(sql, note.categoriesNotes);
         }
 
         public void Delete(int id)
         {
             Note? note = Get(id);
             if (note != null)
-                _context.Connection.Delete(note);
+            {
+                string sql = @$"DELETE FROM Note WHERE Id = {id}";
+                _context.Connection.Execute(sql);
+            }
         }
 
         public Note? Get(int id)
@@ -104,7 +111,15 @@ namespace ToDoList.Services
             if (note != null)
             {
                 newNote.id = note.id;
-                _context.Connection.Update(newNote);
+                string sql = @"UPDATE Note
+                               SET name = @name,
+                                   description = @description,
+                                   created = @created,
+                                   modified = @modified,
+                                   deadline = @deadline,
+                                   statuscode = @statuscode
+                               WHERE id = @id";
+                _context.Connection.Execute(sql, newNote);
             }
         }
     }

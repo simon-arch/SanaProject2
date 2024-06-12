@@ -1,22 +1,43 @@
+using GraphQL;
+using GraphQL.Types;
 using ToDoList.Data;
+using ToDoList.GraphQL;
 using ToDoList.Services;
-using GraphQL.AspNet.Configuration;
+using ToDoList.GraphQL.Queries;
+using static ToDoList.Services.ServiceFactory;
+using ToDoList.GraphQL.Mutations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<ApplicationXMLContext>();
-builder.Services.AddScoped<INoteService, NoteServiceXML>();
-builder.Services.AddScoped<ICategoryService, CategoryServiceXML>();
+builder.Services.AddSingleton<INoteService, NoteServiceXML>();
+builder.Services.AddSingleton<ICategoryService, CategoryServiceXML>();
 
 builder.Services.AddSingleton<ApplicationSQLContext>();
-builder.Services.AddScoped<INoteService, NoteServiceSQL>();
-builder.Services.AddScoped<ICategoryService, CategoryServiceSQL>();
+builder.Services.AddSingleton<INoteService, NoteServiceSQL>();
+builder.Services.AddSingleton<ICategoryService, CategoryServiceSQL>();
 
-builder.Services.AddGraphQL();
+builder.Services.AddSingleton<CategoryType>();
+builder.Services.AddSingleton<CategoryQueries>();
+builder.Services.AddSingleton<CategoryMutations>();
 
-builder.Services.AddScoped<ServiceFactory>();
+builder.Services.AddSingleton<NoteType>();
+builder.Services.AddSingleton<NoteQueries>();
+builder.Services.AddSingleton<NoteMutations>();
+
+builder.Services.AddSingleton<GraphQueries>();
+builder.Services.AddSingleton<GraphMutations>();
+
+builder.Services.AddSingleton<ISchema, GraphSchema>();
+
+builder.Services.AddGraphQL(x => x
+    .AddAutoSchema<GraphQueries>()
+    .AddAutoSchema<GraphMutations>()
+    .AddSystemTextJson());
+
+builder.Services.AddSingleton<ServiceFactory>();
 
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
@@ -36,7 +57,17 @@ app.UseRouting();
 app.UseAuthorization();
 app.UseSession();
 
-app.UseGraphQL();
+app.UseGraphQL<ISchema>("/graphql");
+app.UseGraphQLPlayground(
+    "/playground",
+    new GraphQL.Server.Ui.Playground.PlaygroundOptions
+    {
+        GraphQLEndPoint = "/graphql",
+        SubscriptionsEndPoint = "/graphql",
+        Headers = new Dictionary<string, object> {
+            { "CurrentDatabase", CurrentDatabase.SQL.ToString() }
+        }
+    });
 
 app.MapControllerRoute(
     name: "default",

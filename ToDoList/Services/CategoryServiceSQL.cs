@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿using Dapper;
 using ToDoList.Data;
 using ToDoList.Models;
 
@@ -13,26 +13,30 @@ namespace ToDoList.Services
         }
         public void Add(Category category)
         {
-            _context.Connection.Insert(category);
+            string sql = @"INSERT INTO Category (name) VALUES (@name)";
+            _context.Connection.Execute(sql, category);
         }
 
         public void Delete(int id)
         {
+            string sql = @$"DELETE FROM Category WHERE Id = {id}";
             Category? category = Get(id);
             if (category != null)
             {
-                _context.Connection.Delete(category);
+                _context.Connection.Execute(sql);
             }
         }
 
         public Category? Get(int id)
         {
-            return _context.Connection.Get<Category>(id);
+            string sql = @$"SELECT id, name FROM Category WHERE Id = {id}";
+            return _context.Connection.QueryFirstOrDefault<Category>(sql);
         }
 
         public IEnumerable<Category> GetAll()
         {
-            return _context.Connection.GetAll<Category>();
+            string sql = @$"SELECT id, name FROM Category";
+            return _context.Connection.Query<Category>(sql);
         }
     }
 }
