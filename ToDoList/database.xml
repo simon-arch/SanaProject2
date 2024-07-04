@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <database>
   <NextID>
-    <note>43</note>
+    <note>44</note>
     <category>51</category>
   </NextID>
   <Categories>
@@ -10,5 +10,16 @@
       <name>XML_Category</name>
     </Category>
   </Categories>
-  <Notes />
+  <Notes>
+    <Note>
+      <id>43</id>
+      <name>1</name>
+      <description>2</description>
+      <created>2024-06-19T18:18:03.975579+03:00</created>
+      <modified>2024-06-19T18:55:03.3498784+03:00</modified>
+      <deadline p4:nil="true" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance" />
+      <statuscode>1</statuscode>
+      <Categories />
+    </Note>
+  </Notes>
 </database>
