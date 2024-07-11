@@ -43,7 +43,7 @@ namespace ToDoList.GraphQL.Mutations
                         deadline = context.GetArgument<DateTime?>("deadline"),
                         categoriesNotes = categoriesNotes
                     };
-                    serviceFactory.GetNoteService(GetServiceID(accessor))!.Add(note);
+                    note.id = serviceFactory.GetNoteService(GetServiceID(accessor))!.Add(note);
                     return note;
             });
             Field<NoteType>("Delete")

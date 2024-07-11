@@ -32,6 +32,15 @@ builder.Services.AddSingleton<GraphMutations>();
 
 builder.Services.AddSingleton<ISchema, GraphSchema>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOriginPolicy",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 builder.Services.AddGraphQL(x => x
     .AddAutoSchema<GraphQueries>()
     .AddAutoSchema<GraphMutations>()
@@ -50,6 +59,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseCors("AllowAnyOriginPolicy");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

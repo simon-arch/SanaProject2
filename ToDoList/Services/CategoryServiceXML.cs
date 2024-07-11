@@ -11,7 +11,7 @@ namespace ToDoList.Services
         {
             _context = context;
         }
-        public void Add(Category category)
+        public int Add(Category category)
         {
             var idElem = _context.Connection.Root!
                 .Element("NextID")!
@@ -23,6 +23,7 @@ namespace ToDoList.Services
                 .Element("Categories")!
                 .Add(target);
             _context.SaveChanges();
+            return category.id;
         }
         public void Delete(int id)
         {

@@ -1,9 +1,40 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import CategoryItem from './CategoryItem';
+import { setCategories } from '../redux/categorySlice';
+import { getOptions } from '../api/options';
 
 const CategoryList = () => {
+	const dispatch = useDispatch();
 	const categories = useSelector((state) => state.categories);
+	const currentDatabase = useSelector(state => state.database);
+	
+	useEffect(() => {
+		fetch(getOptions().apiEndPoint, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+            'CurrentDatabase': currentDatabase
+			},
+			body: JSON.stringify({
+				query: `
+					query {
+						categories_Q {
+							getAll {
+                                id,
+                                name
+							}
+						}
+					}
+				`
+			})
+		})
+		.then(response => response.json())
+		.then(data => {
+			dispatch(setCategories(data.data.categories_Q.getAll));
+		})
+		
+	}, [currentDatabase]);
 
 	return (
         <div>

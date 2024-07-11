@@ -10,6 +10,7 @@ const AddCategoryForm = () => {
 	const onSubmit = (event) => {
 		event.preventDefault();
 		dispatch(addCategory({
+            id: Date.now(),
 			name: name
 		}))
         setName('');
@@ -22,12 +23,13 @@ const AddCategoryForm = () => {
                     <tr>
                         <td>
                             <input type="submit"
+                            style={{width: '150px'}}
                             value="Add Category"
                             className="btn btn-primary text-white"/>
                         </td>
                         <td>
                             <input required 
-                            style={{float: 'left', width: '180px'}}
+                            style={{float: 'left', width: '150px'}}
                             onChange={(event) => setName(event.target.value)}
                             placeholder="Category Name" 
                             className="rounded" 

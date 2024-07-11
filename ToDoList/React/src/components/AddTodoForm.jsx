@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addTodo } from '../redux/todoSlice';
-import { getCurrentDate } from '../utility/CurrentDate';
-import { useSelector } from 'react-redux';
 
 const AddTodoForm = () => {
 	const [name, setName] = useState('');
@@ -21,10 +19,11 @@ const AddTodoForm = () => {
 	const onSubmit = (event) => {
 		event.preventDefault();
 		dispatch(addTodo({
+			id: Date.now(),
 			name: name,
 			description: description,
-			deadline: getCurrentDate(deadline),
-			categories: categories.map(id => parseInt(id))
+			deadline: deadline,
+			categoriesNotes: categories.map(id => parseInt(id))
 		}))
 		setName('');
 		setDescription('');
@@ -33,14 +32,15 @@ const AddTodoForm = () => {
 	};
 
 	return (
-		<div className="card p-1 m-3 text-white" style={{width: '500px', border: '2px solid black', borderRadius: '20px', backgroundColor: '#28282B'}}>
-			<div className="card-body">
+		<div className='card p-1 m-3 text-white' style={{width: '500px', border: '2px solid black', borderRadius: '20px', backgroundColor: '#28282B'}}>
+			<div className='card-body'>
 				<form onSubmit={onSubmit}>
 					<table style={{width: '100%'}}>
 						<tbody>
 							<tr>
 								<td style={{width: '100px'}}>Name:</td>
-								<td><input value={name} 
+								<td><input value={name}
+								 	id="title"
 									onChange={(event) => setName(event.target.value)} 
 									required 
 									placeholder="Note Title" 
@@ -52,7 +52,8 @@ const AddTodoForm = () => {
 							</tr>
 							<tr>
 								<td>Description:</td>
-								<td><textarea value={description} 
+								<td><textarea value={description}
+								 	id="description"
 									onChange={(event) => setDescription(event.target.value)} 
 									placeholder="Optional Description" 
 									style={{width: '98%'}} 

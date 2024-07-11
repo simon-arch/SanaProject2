@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using System.Data;
 namespace ToDoList.Data
 {
     public class ApplicationSQLContext
@@ -11,6 +12,10 @@ namespace ToDoList.Data
             _configuration = configuration;
             _connectionString = _configuration.GetConnectionString("SQLConnection")!;
             Connection = new SqlConnection(_connectionString);
+        }
+        public IDbConnection NewConnection()
+        {
+            return new SqlConnection(_connectionString);
         }
     }
 }

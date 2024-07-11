@@ -17,7 +17,7 @@ const CategoryItem = ({ category }) => {
 				<p>{category.name}</p>
 			</td>
 			<td>
-				<a className="btn btn-danger" 
+				<a className='btn btn-danger' 
 				style={{float: 'right'}} 
 				onClick={handleDeleteClick}>
 				Delete</a>

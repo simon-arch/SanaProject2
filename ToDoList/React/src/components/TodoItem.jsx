@@ -1,7 +1,7 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { finishTodo, deleteTodo, removeCategory } from '../redux/todoSlice';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { finishTodo, deleteTodo } from '../redux/todoSlice';
+import { getCurrentDate } from "../utility/CurrentDate";
 
 const TodoItem = ({ todo }) => {
 	const categories = useSelector((state) => state.categories);
@@ -10,7 +10,6 @@ const TodoItem = ({ todo }) => {
 	const handleCompleteClick = () => {
 		dispatch(finishTodo({
 			id: todo.id,
-			completed: !todo.completed
 		}));
 	};
 
@@ -20,23 +19,16 @@ const TodoItem = ({ todo }) => {
 		}));
 	};
 
-	const handleRemoveCategory = (target) => {
-		dispatch(removeCategory({
-			id: todo.id,
-			categoryId: target
-		}));
-	}
-
 	return (
-		<div className="card p-1 m-3" style={{width: '500px', border: '2px solid black', borderRadius: '20px', backgroundColor: '#28282B'}}>
-			<div className="card-body" style={{borderRadius: '18px', background: 'repeating-linear-gradient(45deg, #fafafa 0px, #fafafa 4px, #f0f0f0 2px, #f0f0f0 9px)'}}>
-			<a className="btn btn-danger mb-3 rounded-pill" style={{float: 'right', border: '2px darkred dashed'}} onClick={handleDeleteClick}>🗑</a>
+		<div className='card p-1 m-3' style={{width: '500px', border: '2px solid black', borderRadius: '20px', backgroundColor: '#28282B'}}>
+			<div className='card-body' style={{borderRadius: '18px', background: 'repeating-linear-gradient(45deg, #fafafa 0px, #fafafa 4px, #f0f0f0 2px, #f0f0f0 9px)'}}>
+			<a className='btn btn-danger mb-3 rounded-pill' style={{float: 'right', border: '2px darkred dashed'}} onClick={handleDeleteClick}>🗑</a>
 				{ todo.completed ? (
-						<p className="btn btn-success mb-3 rounded-pill" style={{border: '2px darkgreen solid'}}>Finished</p>
+						<p className='btn btn-success mb-3 rounded-pill' style={{border: '2px darkgreen solid'}}>Finished</p>
 					) : (
 						<div>
 							<a style={{fontSize: '30px', marginRight: '10px', textDecoration: 'none', cursor: 'pointer'}} onClick={handleCompleteClick}>✅</a>
-							<p className="btn btn-warning mb-3 rounded-pill" style={{border: '2px orange solid'}}>In Progress</p>
+							<p className='btn btn-warning mb-3 rounded-pill' style={{border: '2px orange solid'}}>In Progress</p>
 						</div>
 					)}
 
@@ -56,26 +48,23 @@ const TodoItem = ({ todo }) => {
 					</div>
 				) }
 				
-				<p className="task-created m-0" style={{fontSize: '13px'}}>
-					<span style={{float: 'right'}}><b>Created:</b> {todo.created}</span><br/>
-					<span style={{float: 'right'}}><b>Updated:</b> {todo.modified}</span>
-					{todo.deadline !== '' && (
-						<span style={{ float: 'left'}}><b>Deadline:</b> {todo.deadline}</span>
+				<p className='task-created m-0' style={{fontSize: '13px'}}>
+					<span style={{float: 'right'}}><b>Created:</b> {getCurrentDate(todo.created)}</span><br/>
+					<span style={{float: 'right'}}><b>Updated:</b> {getCurrentDate(todo.modified)}</span>
+					{todo.deadline !== null && (
+						<span style={{ float: 'left'}}><b>Deadline:</b> {getCurrentDate(todo.deadline)}</span>
 					)}
 				</p>
 			</div>
 			<div style={{display: 'block', margin: 'auto', textAlign: 'center'}}>
-				{todo.categories.map((id) => {
+				{todo.categoriesNotes.map((id) => {
 				const category = categories.find((c) => c.id === id);
-
 				if (!category) {
-					handleRemoveCategory(id);
 					return (null);
 				}
-
 				return (
 					<span key={category.id} 
-					className="btn btn-dark my-1 rounded-pill border-light" 
+					className='btn btn-dark my-1 rounded-pill border-light' 
 					style={{ borderWidth: '2px', margin: '2px', maxWidth: '150px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
 						{category.name}
 					</span>

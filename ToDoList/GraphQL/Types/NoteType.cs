@@ -9,7 +9,7 @@ namespace ToDoList.GraphQL
         {
             Field(x => x.id);
             Field(x => x.name);
-            Field(x => x.description);
+            Field(x => x.description, nullable: true);
             Field(x => x.created);
             Field(x => x.modified);
             Field(x => x.deadline, nullable: true);

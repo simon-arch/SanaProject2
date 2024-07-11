@@ -1,5 +1,5 @@
 export function getCurrentDate(format = 'default'){
-    if (format == '') return ''
+    if (format == null) return null
     var newDate = (format === 'default') ? new Date() : new Date(format);
     var date = newDate.getDate();
     var month = newDate.getMonth() + 1;

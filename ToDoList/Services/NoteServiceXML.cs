@@ -11,7 +11,7 @@ namespace ToDoList.Services
         {
             _context = context;
         }
-        public void Add(Note note)
+        public int Add(Note note)
         {
             var idElem = _context.Connection.Root!
                 .Element("NextID")!
@@ -19,6 +19,7 @@ namespace ToDoList.Services
             note.id = int.Parse(idElem.Value);
             idElem.Value = (note.id + 1).ToString();
             AddElem(note);
+            return note.id;
         }
         public void Delete(int id)
         {
@@ -89,7 +90,7 @@ namespace ToDoList.Services
             var categories = target.Element("Categories");
             foreach (var item in note.categoriesNotes)
             {
-                categories.Add(new XElement("id", item.categoryid));
+                categories!.Add(new XElement("id", item.categoryid));
             }
             _context.Connection.Root?
                 .Element("Notes")!

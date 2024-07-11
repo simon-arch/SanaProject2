@@ -18,7 +18,7 @@ namespace ToDoList.GraphQL.Mutations
                     {
                         name = context.GetArgument<string>("name")
                     };
-                    serviceFactory.GetCategoryService(GetServiceID(accessor))!.Add(category);
+                    category.id = serviceFactory.GetCategoryService(GetServiceID(accessor))!.Add(category);
                     return category;
                 });
             Field<CategoryType>("Delete")

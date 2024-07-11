@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using System.Data;
 using ToDoList.Data;
 using ToDoList.Models;
 
@@ -11,31 +13,35 @@ namespace ToDoList.Services
         {
             _context = context;
         }
-        public void Add(Note note)
+        public int Add(Note note)
         {
+            IDbConnection connection = _context.NewConnection();
             string sql = @$"INSERT INTO Note (name, description, created, modified, deadline, statuscode) 
                             OUTPUT inserted.Id                            
                             VALUES (@name, @description, @created, @modified, @deadline, @statuscode)";
-            int noteId = _context.Connection.QuerySingle<int>(sql, note);
+            int noteId = connection.QuerySingle<int>(sql, note);
             foreach (CategoryNote categoryNote in note.categoriesNotes)
                 categoryNote.noteid = noteId;
             sql = $@"INSERT INTO categoryNote (noteid, categoryid)
                      VALUES (@noteid, @categoryid)";
-            _context.Connection.Execute(sql, note.categoriesNotes);
+            connection.Execute(sql, note.categoriesNotes);
+            return noteId;
         }
 
         public void Delete(int id)
         {
+            IDbConnection connection = _context.NewConnection();
             Note? note = Get(id);
             if (note != null)
             {
                 string sql = @$"DELETE FROM Note WHERE Id = {id}";
-                _context.Connection.Execute(sql);
+                connection.Execute(sql);
             }
         }
 
         public Note? Get(int id)
         {
+            IDbConnection connection = _context.NewConnection();
             string query = $@"
                 SELECT n.id, n.name, n.created, n.modified, n.deadline, n.statuscode, n.description, c.id, c.name
                 FROM Note n
@@ -44,7 +50,7 @@ namespace ToDoList.Services
                 WHERE n.id = {id}
             ";
 
-            var notes = _context.Connection.Query<Note, Category, Note>(query, (n, c) =>
+            var notes = connection.Query<Note, Category, Note>(query, (n, c) =>
             {
                 if (c != null)
                 {
@@ -73,6 +79,7 @@ namespace ToDoList.Services
 
         public IEnumerable<Note> GetAll()
         {
+            IDbConnection connection = _context.NewConnection();
             string query = @"
                 SELECT n.id, n.name, n.created, n.modified, n.deadline, n.statuscode, n.description, c.id, c.name
                 FROM Note n
@@ -80,7 +87,7 @@ namespace ToDoList.Services
                 LEFT JOIN category c ON cn.categoryid = c.id
             ";
 
-            var notes = _context.Connection.Query<Note, Category, Note>(query, (n, c) =>
+            var notes = connection.Query<Note, Category, Note>(query, (n, c) =>
             {
                 if (c != null)
                 {
@@ -107,6 +114,7 @@ namespace ToDoList.Services
 
         public void Update(Note newNote, int id)
         {
+            IDbConnection connection = _context.NewConnection();
             Note? note = Get(id);
             if (note != null)
             {
@@ -119,7 +127,7 @@ namespace ToDoList.Services
                                    deadline = @deadline,
                                    statuscode = @statuscode
                                WHERE id = @id";
-                _context.Connection.Execute(sql, newNote);
+                connection.Execute(sql, newNote);
             }
         }
     }

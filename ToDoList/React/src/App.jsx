@@ -1,9 +1,10 @@
 import React from 'react';
 import AddTodoForm from './components/AddTodoForm';
 import TodoList from './components/TodoList';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import CategoryList from './components/CategoryList';
 import AddCategoryForm from './components/AddCategoryForm'
+import DatabaseForm from './components/DatabaseForm';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
 	return (
@@ -20,6 +21,7 @@ const App = () => {
 				<div className="col-lg-1">
 					<div style={{ float: 'right', width: '370px'}}>
 						<div className="card m-3 text-white" style={{ border: '2px solid black', backgroundColor: '#28242C'}}>
+							<DatabaseForm />
 							<AddCategoryForm />
 							<CategoryList />
 						</div>
